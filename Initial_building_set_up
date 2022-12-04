@@ -1,0 +1,37 @@
+import c4d
+
+frnt=[]
+right=[]
+back=[]
+left=[]
+topbttm=[]
+
+sumx=0
+
+cnt
+
+l=5    #this is the length of the building 
+w=5    #this is the width of the building  
+z=6    #this is the depth of the building
+
+for i in range (cnt):
+  if (sumx<l*w):
+    frnt.append(i)
+    frnt.appned(i+w-1)
+    
+  elif(sumx<(l*w +l*z)):
+      right.append(i)
+      right.appned(i+w-1)
+      
+  elif(sumx<(2*l*w +l*z)):
+      back.append(i)
+      back.appned(i+w-1)
+      
+ elif(sumx<(2*l*w +2*l*z)):
+      left.append(i)
+      left.appned(i+w-1)
+      
+      
+      
+      
+    
