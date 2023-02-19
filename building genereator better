@@ -1,0 +1,144 @@
+import c4d
+from c4d.modules import mograph as mo
+#Welcome to the world of Python
+
+op=c4d.BaseObject
+
+def main():
+    md = mo.GeGetMoData(op)
+    if md is None: return False
+    
+    cnt  = md.GetCount()
+    marr = md.GetArray(c4d.MODATA_MATRIX)
+    clnr  = md.GetArray(c4d.MODATA_CLONE)    
+    clr  = md.GetArray(c4d.MODATA_COLOR)    
+    fall = md.GetFalloffs()  
+    
+    
+    obj=c4d.BaseObject
+    # Here I have created different list so that I can separate the floos
+    front=[]
+    right=[]
+    back=[]
+    left=[]
+    
+    #the top and bottom is to make sure that I can place nulls and I plane to place giant plane
+    top=[]
+    bottom=[]
+    
+    #this is to create a place holder to make sure that I can store places for the corners 
+    corner=[]
+    
+    
+    #this is to make sure that I will have a place for the faces that donot include the corners
+    frontfaces=[]
+    
+    # This list is prepared to make sure that there are no corners and this will only have front faces
+    facade=[]
+    
+    # this is to help separate the different phases
+    suma=0
+    
+    x= op[c4d.ID_USERDATA,4]
+    y= op[c4d.ID_USERDATA,5]
+    z= op[c4d.ID_USERDATA,6]
+      
+    for i in range(cnt):
+        if (suma<x*y):
+            #clr[i]=c4d.Vector(1,0,0)
+            front.append(i)
+            frontfaces.append(i)
+            suma=suma+1
+            
+            
+        elif(suma<(y*z+x*y)):
+            #clr[i]=c4d.Vector(0,1,0)
+            right.append(i)
+            frontfaces.append(i)
+            suma=suma+1
+        
+        elif(suma<(y*z+x*y*2)):
+            #clr[i]=c4d.Vector(0,0,1)
+            back.append(i)
+            frontfaces.append(i)
+            suma=suma+1
+            
+        elif(suma<(2*y*z+x*y*2)):
+            #clr[i]=c4d.Vector(1,0,1)
+            left.append(i)
+            frontfaces.append(i)
+            suma=suma+1
+        
+        elif(suma<(2*y*z+x*y*2+x*z)):
+            #clr[i]=c4d.Vector(1,1,1)
+            top.append(i)
+            suma=suma+1
+        
+        elif(suma<(2*y*z+x*y*2+2*x*z)):
+            #clr[i]=c4d.Vector(1,1,1)
+            bottom.append(i)
+            suma=suma+1
+            
+    # Here I have decided to make sure that I have separated all the pieces into corner peieces 
+        
+    for j in range(x*y):
+        if(j%x==0):
+            x11=(front[j]+x-1)
+            #print(front[j],x11)
+            
+            corner.append(front[j])
+            corner.append(x11)
+            
+    for j1 in range(z*y):
+        if(j1%z==0):
+            z11=(right[j1]+z-1)
+            #print(right[j1],z11)
+            
+            corner.append(right[j1])
+            corner.append(z11)
+            
+    for j2 in range(x*y):
+        if(j2%x==0):
+            x12=(back[j2]+x-1)
+            #print(back[j2],x12)
+            
+            corner.append(x12)
+            corner.append(back[j2])
+        
+    for j3 in range(z*y):
+        if(j3%z==0):
+            z12=(left[j3]+z-1)
+            #print(left[j3],z12)
+            
+            corner.append(z12)
+            corner.append(right[j3])
+            
+    
+    #this is to make sure that the indexes in corner list are all organiuzed
+    #frontfaces.sort()
+    corner.sort() 
+    
+     
+    for i2 in frontfaces:
+        for i3 in corner:
+            if(i2==i3):
+                pass
+            else:
+                facade.append(i2)
+    
+    
+    
+    
+    for i4 in range (cnt):
+        if i4 in corner:
+            clr[i4]=c4d.Vector(1,0,0)  
+            
+        elif i4 in facade:
+            clr[i4]=c4d.Vector(0,1,0)  
+        
+        
+    md.SetArray(c4d.MODATA_MATRIX, marr, True)
+    md.SetArray(c4d.MODATA_COLOR, clr, True)
+    md.SetArray(c4d.MODATA_CLONE, clnr, True)
+    
+    return True
